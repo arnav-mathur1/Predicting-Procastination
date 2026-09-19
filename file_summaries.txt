@@ -1,0 +1,89 @@
+PROJECT: Predicting Procrastination in College Students Using Machine Learning
+Overview: Uses two raw CSVs of student assignment data to engineer a "procrastination index"
+target, then trains/compares Random Forest, SVR, and Neural Network regressors to predict it.
+The notebooks below trace the project's daily progress from raw data exploration to final models.
+
+DATA FILES
+----------
+p2c-attempts-v1.csv
+  Raw dataset: one row per assignment attempt (student ID, assignment type A01/A02/A03,
+  attempt number, grade, submission time). This is the core behavioral/task dataset used
+  to engineer all features and the procrastination index.
+
+p2c-grades-v1.csv
+  Raw dataset: final course grade (0-100) per student ID. Used early on to cross-check
+  student ID consistency with the attempts dataset (not used in the final index/model).
+
+fig.png
+  Exported bar chart image (from ASSIP_July28.ipynb) comparing MSE and R-squared across
+  the three models — the results figure used in the final report.
+
+NOTEBOOKS (in chronological/development order)
+------------------------------------------------
+ASSIP_July18.ipynb
+  Earliest exploration: loads/reorders the attempts data, experiments with Plotly parallel
+  coordinates plots and a 2D heatmap to visually explore relationships in the raw data.
+
+ASSIP_July20.ipynb
+  First feature-engineering attempt: encodes assignment types as numbers, sorts data by
+  student/assignment/attempt, and creates a naive binary "procrastination" label (late
+  submission time < 0). Tries an early Logistic Regression classifier on this binary label
+  — an approach later abandoned in favor of a continuous index.
+
+ASSIP_July21.ipynb
+  Data validation step: loads both CSVs, extracts the unique student ID sets from each,
+  and takes a symmetric difference to check which student IDs appear in one dataset but
+  not the other (data cleaning/quality check before merging).
+
+ASSIP_July22.ipynb
+  Prototypes the procrastination index logic on a small 9-row subset: introduces the
+  Late Submission Weight (0.6) and Grade Improvement Weight (0.4) constants and starts
+  looping through attempts to count procrastination/grade-improvement events per student.
+
+ASSIP_July23.ipynb
+  First full end-to-end pass: builds the PA (procrastination attempt) and GIA (grade
+  improvement attempt) flags for every row, computes the weighted procrastination index
+  for the whole dataset, drops non-feature columns, and trains an initial Random Forest
+  Regressor, evaluating it with MSE/R-squared.
+
+ASSIP_July24.ipynb
+  Refines the procrastination index calculation (cleaner row-by-row loop producing
+  procrastination_index_list/PA_list/GIA_list) and trains a first Support Vector
+  Regression (SVR) model on the resulting features/target.
+
+ASSIP_July24_cont.ipynb
+  Continuation of July24: re-derives the same index-labeled dataset and builds the first
+  Neural Network Regression model (Keras Sequential, StandardScaler-normalized features)
+  as an alternative to SVR/Random Forest.
+
+ASSIP_July28.ipynb
+  Results visualization: takes the final recorded MSE and R-squared values for all three
+  models (Random Forest, SVR, Neural Network) and iterates through several matplotlib bar
+  chart designs to produce the comparison figure (fig.png) used in the report.
+
+ASSIP_July29_RFR.ipynb  (main/final)
+  Clean, final version of the Random Forest pipeline: reproduces the dataset prep and
+  procrastination-index labeling, then trains/evaluates the final RandomForestRegressor
+  (n_estimators=100) — the best-performing model (R² ≈ 0.873).
+
+ASSIP_July29_SVR.ipynb  (main/final)
+  Clean, final version of the SVR pipeline: same data prep/index labeling, then trains/
+  evaluates the final Support Vector Regression model with an RBF kernel — the
+  weakest-performing model (R² ≈ 0.609).
+
+ASSIP_July29_NNR.ipynb  (main/final)
+  Clean, final version of the Neural Network pipeline: same data prep/index labeling,
+  then builds/trains/evaluates the final Keras neural network (32→16→1 layers, ReLU,
+  100 epochs) — the second-best model (R² ≈ 0.840).
+
+temp.ipynb
+  Small scratch notebook using a hand-typed 9-row sample (student 10133) to sanity-check
+  the procrastination index formula/logic in isolation, separate from the real CSV data.
+
+HOW THIS SERVES THE FINAL GOAL
+-------------------------------
+July18-22 = exploration and building the procrastination index concept.
+July23-24(_cont) = first working versions of all three ML models.
+July28 = turns the three models' results into the comparison chart for the report.
+July29 (RFR/SVR/NNR) = the finalized, cleaned-up versions of each model that produced the
+exact numbers (MSE/R²) reported in the final research paper.
