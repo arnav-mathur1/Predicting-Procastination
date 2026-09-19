@@ -48,8 +48,8 @@ The **Random Forest model performed best**, achieving an R² of approximately **
 ## Tools
 Python, Pandas, scikit-learn, Keras
 
-# Future
-Need to add Jupyter notebooks used to execute the project work
+# Files
+Added in the Jupyter notebooks used to execute the project work. With the help of Claude Code, I was able to include a file summary of each of the files to explain how it contributed to the final research.
 
 # Links
 
